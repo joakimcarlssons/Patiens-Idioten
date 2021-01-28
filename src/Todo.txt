@@ -1,0 +1,5 @@
+- Alla kort tas inte bort korrekt
+- Ess räknas som 1 och inte 14
+- Det finns inget error-meddelande när kortleken tar slut
+- Man kan inte flytta kort mellan högarna
+- Animationer
