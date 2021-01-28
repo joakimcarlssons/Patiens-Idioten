@@ -17,14 +17,20 @@
         <Deck
         :cards="mainDeck"
         />
+        <p>Cards left: {{cardsLeft}}</p>
         </span>
 
         <Deck
         :cards="trashDeck"
         :name="'trash'"
          />
-
     </div>
+
+    <transition enter-active-class="animated fadeInLeft slow">
+        <div class="footer" v-if="cardsLeft == 0">
+            <p>YOU LOSE IDIOT</p>
+        </div>
+    </transition>
 
   </main>
 </template>
@@ -51,7 +57,9 @@ export default {
         {"name":"Pile4", "cards":[]}],
 
         // Trashable cards
-        trashables : []
+        trashables : [],
+
+        cardsLeft: 52,
     }},
     components: {Deck},
     computed: {
@@ -67,6 +75,7 @@ export default {
         takeFour(){
             Game.takeFour(this.mainDeck, this.playDecks)
             this.trashables = Game.checkForTrashables(this.playDecks)
+            this.cardsLeft -= 4
         },
         trashCard(item) {
 
@@ -95,6 +104,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import url('https://cdn.jsdelivr.net/npm/animate.css@3.5.1');
 
 main {
     display: flex;
@@ -111,6 +121,23 @@ main {
         justify-content: space-between;
     }
 
+}
+
+p { 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    padding-left: 4rem;
+}
+
+.footer {
+    text-align: center;
+    p {
+        font-size: 14rem;
+    }
+}
+.slow {
+    animation-duration: 2s;    
 }
 
 </style>

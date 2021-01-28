@@ -33,7 +33,6 @@ export default {
                 case 13: return 'K';
                 case 12: return 'Q';
                 case 11: return 'Kn';
-                case 1: return 'A';
                 case 14: return 'A';
                 default: return this.card.value
             }

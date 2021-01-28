@@ -1,5 +1,7 @@
 - Alla kort tas inte bort korrekt
-- Ess räknas som 1 och inte 14
-- Det finns inget error-meddelande när kortleken tar slut
+- Ess räknas som 1 och inte 14 //DONE
+- Det finns inget error-meddelande när kortleken tar slut //DONE
+- Lagt till en counter som visar hur många kort som är kvar //DONE
 - Man kan inte flytta kort mellan högarna
+- Kolla efter vilka som kan trashas verkar inte kollas på kort längre ner i högen
 - Animationer

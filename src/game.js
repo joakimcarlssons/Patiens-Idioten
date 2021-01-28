@@ -5,7 +5,7 @@ module.exports = {
         const suites = ["Hearts", "Spades", "Diamonds", "Clubs"]
         
         for(let suite of suites) {
-            for(let value = 1; value <= 13; value++) {
+            for(let value = 2; value <= 14; value++) {
                 const card = {suite, value}
                 arr.push(card)
             }
