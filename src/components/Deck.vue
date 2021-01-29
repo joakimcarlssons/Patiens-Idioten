@@ -9,10 +9,10 @@
         v-for="(card, index) in cards" 
         :key="card.suite+card.value"
         :card="card"
-        :style="`z-index: ${index}`"  
+        :style="`z-index: ${index}; animation: zoomInDown ${changedPile ? 0 : animationDelay}s;`"
         class="stack"
         :faceDown="name == 'trash'"
-        @cardDropped="cardDropped"
+        @moveCard="moveCard"
         />
   </article>
 </template>
@@ -23,25 +23,32 @@ import Card from './Card.vue'
 
 export default {
     components: {Card},
-
     props: {
         cards: Array,
         faceDown: Boolean,
-        name : String
+        name : String,
+        animationDelay : Number,
+        changedPile : Boolean
     },
-
     methods: {
+
+      // Selects the card to be trashed
       trashCard() {
-          this.$emit('trash', [this.cards[this.cards.length - 1], this.name])
+          this.$emit('trash', this.cards[this.cards.length - 1], this.name)
       },
-      cardDropped(payload) {
-        this.$emit('cardDropped', payload, this.name)
-      },
+
+      // Selects the card to be moved
+      moveCard(card) {
+
+        // Emitting the card to be added to another pile, also emitting the pile name
+        this.$emit('moveCard', card, this.name)
+      }
     }
 }
 </script>
 
-<style>
+<style lang="scss">
+@import url('https://cdn.jsdelivr.net/npm/animate.css@3.5.1');
 
 .deck {
   display: grid;

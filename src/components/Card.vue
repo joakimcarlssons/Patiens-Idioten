@@ -1,20 +1,20 @@
 <template>
   <article>
-    <div v-if="!faceDown && !isEmpty">
-        <Drag @dragend="selectedCard" @dragenter="selectedCard">
-            <div class="card">
-                <span class="top">
-                    <img :src="icon" class="icon">
-                    <p>{{displayValue}}</p>
-                </span>
+    <div v-if="!faceDown && !isEmpty" @click="trash">
+        <Drag @dragend="moveCard">
+                <div class="card" :class="{drop : drop}">
+                    <span class="top">
+                        <img :src="icon" class="icon">
+                        <p>{{displayValue}}</p>
+                    </span>
 
-                <img :src="icon"  class="icon large">
+                    <img :src="icon"  class="icon large">
 
-                <span class="bottom">
-                    <img :src="icon" class="icon">
-                    <p>{{displayValue}}</p>
-                </span>
-            </div>
+                    <span class="bottom">
+                        <img :src="icon" class="icon">
+                        <p>{{displayValue}}</p>
+                    </span>
+                </div>
         </Drag>
     </div>
     <div v-else class="card" :class="{dotted : isEmpty, faceDown : faceDown}"></div>
@@ -25,13 +25,20 @@
 import {Drag} from 'vue-drag-drop'
 
 export default {
+
+    data() { return {
+        drop : false
+    }},
     components: {
         Drag,
     },
     props: {
         card: Object,
         faceDown: Boolean,
-        isEmpty: Boolean
+        isEmpty: Boolean,
+        movingCard : Object,
+        isNotMain : Boolean,
+        isBeingTrashed : Boolean
     },
     computed: {
         icon() {
@@ -48,8 +55,13 @@ export default {
         }
     },
     methods: {
-        selectedCard() {
-            this.$emit('cardDropped', this.card)
+        
+        // Select the card to be moved
+        moveCard() {
+            this.$emit('moveCard', this.card)
+        },
+        trash(){
+            this.drop = (this.isNotMain && this.isBeingTrashed)
         }
     }
 }
@@ -57,6 +69,10 @@ export default {
 
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/animate.css@3.5.1');
+
+.drop {
+    animation: fadeOutDown .5s;
+}
 
 .card {
     width: 18rem;

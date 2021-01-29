@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <Board @test="retry" :key="playAgain"/>
+    <Board @playAgain="retry" :key="playAgain"/>
 
   </div>
 </template>
@@ -38,7 +38,7 @@ export default {
 
 }
 
-html, body {
+html, body, #app {
   height: 100%;
 }
 

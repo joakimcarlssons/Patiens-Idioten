@@ -10,7 +10,9 @@
                     :name="deck.name"
                     :cards="deck.cards"
                     @trash="trashCard"
-                    @cardDropped="cardDropped"
+                    @moveCard="moveCard"
+                    :animationDelay="index == 0 ? .5 : index == 1 ? 1 : index == 2 ? 1.5 : 2"
+                    :changedPile="changePile"
                     />
             </div>
         </Drop>
@@ -18,28 +20,31 @@
 
     <div class="bottom">
 
-        <span @click="takeFour">
-        <Deck
-        :cards="mainDeck"
-        />
-        <p>Cards left: {{cardsLeft}}</p>
-        </span>
+            <span @click="takeFour">
+            <Deck
+            :cards="mainDeck"
+            :name="'main'"
+            />
+            <p>Cards left: {{cardsLeft}}</p>
+            </span>
 
-        <Deck
-        :cards="trashDeck"
-        :name="'trash'"
-         />
+            <Deck
+            :cards="trashDeck"
+            :name="'trash'"
+            />
+
     </div>
 
-    <transition enter-active-class="animated fadeInLeft slow">
-        <div class="footer" v-if="cardsLeft == 0">
-            <p>YOU LOSE IDIOT</p>
-            <button @click="playAgain">
-                Another?
-            </button>
+    <transition name="zoom">
+        <div 
+        class="overlay" 
+        v-if="cardsLeft == 0 && trashables.length == 0">
+            <Overlay 
+            @playAgain="playAgain" 
+            :isWinner="checkForWin()"
+            />
         </div>
     </transition>
-
   </main>
 </template>
 
@@ -48,11 +53,14 @@
 import Deck from '@/components/Deck'
 import * as Game from '@/game.js'
 import {Drop} from 'vue-drag-drop'
+import Overlay from '@/components/Overlay'
 
 export default {
     data(){ return {
 
-        deckToDropTo: String,
+        deckToDropTo: "",
+        changePile : false,
+
         retry: 1,
 
         // Deck to get cards from
@@ -70,10 +78,11 @@ export default {
 
         // Trashable cards
         trashables : [],
+        shouldBeTrashed : false,
 
         cardsLeft: 52,
     }},
-    components: {Deck, Drop},
+    components: {Deck, Drop, Overlay},
     computed: {
         topCards() {
             return Game.getTopCards(this.playDecks)
@@ -92,51 +101,72 @@ export default {
             Game.takeFour(this.mainDeck, this.playDecks)
             this.trashables = Game.checkForTrashables(this.playDecks)
             this.cardsLeft -= 4
+            this.changePile = false
         },
-        trashCard(item) {
-
-            // Item[0] = The card to be trashed
-            // Item[1] = The name of the Pile to remove from
-
+        trashCard(card, name) {
 
             for(let i = 0; i < this.trashables.length; i++) {
-                if(this.trashables[i] == item[0]) {
+                if(this.trashables[i] == card) {
 
                     // Get the correct card array
-                    let cardArr = this.playDecks.find(x => x.name == item[1]).cards
+                    let cardArr = this.playDecks.find(x => x.name == name).cards
                     
                     // Add the card to the trash array
-                    this.trashDeck.push(item[0])
+                    this.trashDeck.push(card)
 
                     // Remove the card from the pile
                     cardArr.splice(cardArr.indexOf(
-                        cardArr.find(x => x == item[0])
+                        cardArr.find(x => x == name)
                     ), 1)
                 }
             }
         },
+
         playAgain() {
-            this.$emit('test', this.retry)
+            this.$emit('playAgain', this.retry)
             this.retry++
         },
-        cardDropped(card) {
-            
-            //TODO
-            removeCardFromPile()
-            let deckToAddTo = this.playDecks.find((x) => x.name == this.deckToDropTo)
-                
-            if(deckToAddTo.cards.length == 0) {
-            
 
+        moveCard(card, name) {
+            this.changePile = true;
+
+            let deckToAddTo = this.playDecks.find(x => x.name == this.deckToDropTo)
+            let deckToRemoveFrom = this.playDecks.find(x => x.name == name)
+
+            if(deckToAddTo.cards.length == 0) {
+                deckToRemoveFrom.cards.pop()
                 deckToAddTo.cards.push(card)
             }
         },
+
         findDeck(name) {
             this.deckToDropTo = name
         },
-        removeCardFromPile(card, name) {
-            let deckToRemoveFrom = this.playDecks.find((x) => x.name == name) 
-            deckToRemoveFrom.cards.splice(deckToRemoveFrom.cards.indexOf(card), 1)
+
+        checkForWin(){
+            let sum = 0
+            let numberOfCardsLeft = 0
+
+            // Check number of cards left
+            for(let i = 0; i < this.playDecks.length; i++) {
+                numberOfCardsLeft += this.playDecks[i].cards.length
+            }
+
+            console.log(numberOfCardsLeft)
+
+            if(numberOfCardsLeft == 4) {
+
+                // Check value of top cards
+                for(let i = 0; i < this.topCards.length; i++) {
+                    sum += this.topCards[i].value
+                }
+            }
+            else {
+                return false;
+            }
+
+            // Check that it's only aces left in the piles
+            return (sum == (14 * 4))
         }
     },
 }
@@ -146,6 +176,7 @@ export default {
 @import url('https://cdn.jsdelivr.net/npm/animate.css@3.5.1');
 
 main {
+    height: 100%;
     display: flex;
     flex-direction: column;
 
@@ -177,6 +208,34 @@ p {
 }
 .slow {
     animation-duration: 2s;    
+}
+
+.overlay {
+  position: fixed; /* Sit on top of the page content */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.9); /* Black background with opacity */
+  z-index: 999; /* Specify a stack order in case you're using a different order for other elements */
+}
+
+@media screen and (min-width: 1250px) {
+    main {
+        justify-content: center;
+    }
+
+    .top {
+        width: 50%;
+        align-self: center;
+    }
+
+    .bottom {
+        width: 50%;
+        align-self: center;
+    }
 }
 
 </style>
