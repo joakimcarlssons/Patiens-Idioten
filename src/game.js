@@ -53,19 +53,22 @@ module.exports = {
 
         // Sort the cards by color and value
         topCards = topCards.sort((a, b) => (a.suite > b.suite) ? 1 : -1)
-        
 
         // Check if a card is trashable, and add it to the array if it is
         for(let i = 0; i < topCards.length -1; i++) {
-
-            // Check if the next card is of same suite and higher value
-            if((topCards[i].suite == topCards[i+1].suite)) {
-
-                if(topCards[i].value < topCards[i+1].value) {
-                    trashables.push(topCards[i])
-                }
-                else {
-                    trashables.push(topCards[i+1])
+            if(topCards[i] != undefined) {
+                
+                if(topCards[i+1] != undefined) {
+                // Check if the next card is of same suite and higher value
+                    if((topCards[i].suite == topCards[i+1].suite)) {
+        
+                        if(topCards[i].value < topCards[i+1].value) {
+                            trashables.push(topCards[i])
+                        }
+                        else {
+                            trashables.push(topCards[i+1])
+                        }
+                    }
                 }
             }
         }
@@ -73,4 +76,4 @@ module.exports = {
         // Return the trashable items
         return trashables
     }
-  }
+}

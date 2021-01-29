@@ -1,7 +1,12 @@
-- Alla kort tas inte bort korrekt
-- Ess räknas som 1 och inte 14 //DONE
-- Det finns inget error-meddelande när kortleken tar slut //DONE
-- Lagt till en counter som visar hur många kort som är kvar //DONE
+//DONE - Alla kort tas inte bort korrekt
+//DONE - Ess räknas som 1 och inte 14
+//DONE - Det finns inget error-meddelande när kortleken tar slut
+//DONE - Lagt till en counter som visar hur många kort som är kvar 
 - Man kan inte flytta kort mellan högarna
-- Kolla efter vilka som kan trashas verkar inte kollas på kort längre ner i högen
+// DONE on beforeupdate - Kolla efter vilka som kan trashas verkar inte kollas på kort längre ner i högen 
 - Animationer
+
+
+emitta kortet till deck
+deck emittar till board med kort och vilket deck (name)
+kort splice från sitt eget deck till dropdecket, och lägga sig överst.

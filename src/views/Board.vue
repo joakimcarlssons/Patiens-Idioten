@@ -2,13 +2,18 @@
   <main>
 
     <div class="top">
-        <Deck
-        v-for="(deck, index) in playDecks"
-        :key="index"
-        :name="deck.name"
-        :cards="deck.cards"
-        @trash="trashCard"
-        />
+        <Drop v-for="(deck, index) in playDecks" 
+            :key="index"
+            @drop="findDeck(deck.name)">
+            <div>
+                    <Deck
+                    :name="deck.name"
+                    :cards="deck.cards"
+                    @trash="trashCard"
+                    @cardDropped="cardDropped"
+                    />
+            </div>
+        </Drop>
     </div>
 
     <div class="bottom">
@@ -29,6 +34,9 @@
     <transition enter-active-class="animated fadeInLeft slow">
         <div class="footer" v-if="cardsLeft == 0">
             <p>YOU LOSE IDIOT</p>
+            <button @click="playAgain">
+                Another?
+            </button>
         </div>
     </transition>
 
@@ -39,9 +47,13 @@
 
 import Deck from '@/components/Deck'
 import * as Game from '@/game.js'
+import {Drop} from 'vue-drag-drop'
 
 export default {
     data(){ return {
+
+        deckToDropTo: String,
+        retry: 1,
 
         // Deck to get cards from
         mainDeck : [],
@@ -61,7 +73,7 @@ export default {
 
         cardsLeft: 52,
     }},
-    components: {Deck},
+    components: {Deck, Drop},
     computed: {
         topCards() {
             return Game.getTopCards(this.playDecks)
@@ -71,6 +83,10 @@ export default {
     created() {
         this.mainDeck = Game.shuffle(Game.fillDeck())
     },
+    beforeUpdate() {
+        this.trashables = Game.checkForTrashables(this.playDecks)
+    },
+
     methods: {
         takeFour(){
             Game.takeFour(this.mainDeck, this.playDecks)
@@ -98,8 +114,31 @@ export default {
                     ), 1)
                 }
             }
+        },
+        playAgain() {
+            this.$emit('test', this.retry)
+            this.retry++
+        },
+        cardDropped(card) {
+            
+            //TODO
+            removeCardFromPile()
+            let deckToAddTo = this.playDecks.find((x) => x.name == this.deckToDropTo)
+                
+            if(deckToAddTo.cards.length == 0) {
+            
+
+                deckToAddTo.cards.push(card)
+            }
+        },
+        findDeck(name) {
+            this.deckToDropTo = name
+        },
+        removeCardFromPile(card, name) {
+            let deckToRemoveFrom = this.playDecks.find((x) => x.name == name) 
+            deckToRemoveFrom.cards.splice(deckToRemoveFrom.cards.indexOf(card), 1)
         }
-    }
+    },
 }
 </script>
 

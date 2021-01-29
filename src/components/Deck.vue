@@ -9,9 +9,10 @@
         v-for="(card, index) in cards" 
         :key="card.suite+card.value"
         :card="card"
-        :style="`z-index: ${index}`"
+        :style="`z-index: ${index}`"  
         class="stack"
         :faceDown="name == 'trash'"
+        @cardDropped="cardDropped"
         />
   </article>
 </template>
@@ -31,8 +32,11 @@ export default {
 
     methods: {
       trashCard() {
-        this.$emit('trash', [this.cards[this.cards.length - 1], this.name])
-      }
+          this.$emit('trash', [this.cards[this.cards.length - 1], this.name])
+      },
+      cardDropped(payload) {
+        this.$emit('cardDropped', payload, this.name)
+      },
     }
 }
 </script>

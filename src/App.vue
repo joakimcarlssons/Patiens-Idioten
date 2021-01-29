@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <Board />
+    <Board @test="retry" :key="playAgain"/>
 
   </div>
 </template>
@@ -10,9 +10,19 @@
 import Board from '@/views/Board'
 
 export default {
+  data() {return {
+    playAgain: 0
+  }},
   components: {
     Board
+  },
+  methods: {
+    retry(payload) {
+      console.log(payload)
+      this.playAgain = payload
+    }
   }
+
 }
 </script>
 

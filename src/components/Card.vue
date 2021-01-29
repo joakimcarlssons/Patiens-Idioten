@@ -1,6 +1,8 @@
 <template>
   <article>
-    <div v-if="!faceDown && !isEmpty" class="card">
+    <div v-if="!faceDown && !isEmpty">
+        <Drag @dragend="selectedCard" @dragenter="selectedCard">
+            <div class="card">
                 <span class="top">
                     <img :src="icon" class="icon">
                     <p>{{displayValue}}</p>
@@ -12,13 +14,20 @@
                     <img :src="icon" class="icon">
                     <p>{{displayValue}}</p>
                 </span>
+            </div>
+        </Drag>
     </div>
     <div v-else class="card" :class="{dotted : isEmpty, faceDown : faceDown}"></div>
   </article>
 </template>
 
 <script>
+import {Drag} from 'vue-drag-drop'
+
 export default {
+    components: {
+        Drag,
+    },
     props: {
         card: Object,
         faceDown: Boolean,
@@ -36,6 +45,11 @@ export default {
                 case 14: return 'A';
                 default: return this.card.value
             }
+        }
+    },
+    methods: {
+        selectedCard() {
+            this.$emit('cardDropped', this.card)
         }
     }
 }
