@@ -1,4 +1,6 @@
-# vue-idioten
+# Idioten patiens
+
+Card game Idioten created with Vue.js
 
 ## Project setup
 ```
